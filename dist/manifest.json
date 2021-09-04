@@ -1,0 +1,28 @@
+{
+  "manifest_version": 2,
+  "name": "entry-uploader",
+  "version": "0.1.0",
+  "description": "Upload files in entry community.",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://playentry.org/community/entrystory/*",
+        "https://playentry.org/profile/*/community/entrystory*"
+      ],
+      "js": ["index.js"],
+      "css": ["index.css"],
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": ["https://playentry.org/*"],
+  "icons": {
+    "64": "icons/icon-64.png",
+    "128": "icons/icon-128.png",
+    "256": "icons/icon-256.png"
+  },
+  "applications": {
+    "gecko": {
+      "id": "entry-uploader@tica.fun"
+    }
+  }
+}

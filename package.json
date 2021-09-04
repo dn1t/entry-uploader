@@ -1,0 +1,28 @@
+{
+  "name": "entry-uploader",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production node build.js && cpy manifest.json dist",
+    "watch": "concurrently --raw \"node build.js\" \"wait-on dist && cpy manifest.json dist && web-ext run --source-dir dist --arg=\"--new-tab=https://playentry.org/community/entrystory/list\"\""
+  },
+  "devDependencies": {
+    "@parcel/reporter-web-ext-tool": "iwanker-rockruff/parcel-plugin-web-ext-tool",
+    "@types/webextension-polyfill": "^0.8.0",
+    "concurrently": "^6.2.1",
+    "cpy-cli": "^3.1.1",
+    "cross-env": "^7.0.3",
+    "esbuild": "^0.12.25",
+    "move-file-cli": "^3.0.0",
+    "parcel": "^2.0.0-rc.0",
+    "source-map-support": "^0.5.19",
+    "typescript": "^4.4.2",
+    "wait-on": "^6.0.0",
+    "web-ext": "^6.3.0"
+  },
+  "dependencies": {
+    "webextension-polyfill": "^0.8.0"
+  },
+  "repository": "https://github.com/EntryHack/entry-uploader.git",
+  "author": "thoratica <me@tica.fun>",
+  "license": "MIT"
+}
