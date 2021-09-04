@@ -2,11 +2,12 @@
   "name": "entry-uploader",
   "version": "1.0.0",
   "scripts": {
-    "build": "cross-env NODE_ENV=production node build.js && cpy manifest.json dist",
-    "watch": "concurrently --raw \"node build.js\" \"wait-on dist && cpy manifest.json dist && web-ext run --source-dir dist --arg=\"--new-tab=https://playentry.org/community/entrystory/list\"\""
+    "build": "cross-env NODE_ENV=production node build.js",
+    "watch": "concurrently --raw \"node build.js\" \"wait-on dist && web-ext run --source-dir dist --arg=\"--new-tab=https://playentry.org/community/entrystory/list\"\""
   },
   "devDependencies": {
     "@parcel/reporter-web-ext-tool": "iwanker-rockruff/parcel-plugin-web-ext-tool",
+    "@types/vhtml": "^2.2.4",
     "@types/webextension-polyfill": "^0.8.0",
     "concurrently": "^6.2.1",
     "cpy-cli": "^3.1.1",
@@ -20,6 +21,8 @@
     "web-ext": "^6.3.0"
   },
   "dependencies": {
+    "htm": "^3.1.0",
+    "vhtml": "^2.2.0",
     "webextension-polyfill": "^0.8.0"
   },
   "repository": "https://github.com/EntryHack/entry-uploader.git",

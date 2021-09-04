@@ -14,6 +14,9 @@
       "run_at": "document_start"
     }
   ],
+  "background": {
+    "scripts": ["background.js"]
+  },
   "permissions": ["https://playentry.org/*"],
   "icons": {
     "64": "icons/icon-64.png",
