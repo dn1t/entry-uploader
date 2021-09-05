@@ -203,11 +203,23 @@
       <label for="file">
         <a class="uploadButton">내 컴퓨터에서 선택</a> 
       </label>
+      <div class="useUrl">
+        <div class="divider" />
+        <div class="or">또는</div>
+        <div class="divider" />
+      </div>
     </div>
   </div>
 </>`.toString();
   var _a2;
   (_a2 = popup.querySelector(".popup .title .close")) == null ? void 0 : _a2.addEventListener("click", () => togglePopup("close"));
+  Array.from(popup.querySelectorAll(".popup .tab .item")).forEach((el) => el.addEventListener("click", () => {
+    var _a3;
+    if (!el.classList.contains("selected")) {
+      (_a3 = popup.querySelector(".popup .tab .item.selected")) == null ? void 0 : _a3.classList.remove("selected");
+      el.classList.add("selected");
+    }
+  }));
   document.documentElement.insertBefore(popup, document.head);
 
   // src/index.ts

@@ -53,26 +53,24 @@
 }
 
 .uploaderPopupContainer .popup .tab {
-  padding: 0.5rem 1rem 0 1rem;
+  padding: 0.5rem 0.7rem;
   background-color: whitesmoke;
   display: flex;
 }
 
 .uploaderPopupContainer .popup .tab .item {
-  padding: 0.5rem 1rem 0.4rem 1rem;
-  margin-left: 0.5rem;
+  padding: 0.5rem 1rem;
   background-color: transparent;
-  color: black;
+  color: #555555;
   border-radius: 0.4rem 0.4rem 0 0;
   cursor: pointer;
-}
-
-.uploaderPopupContainer .popup .tab .item:first-child {
-  margin: 0;
+  line-height: 1;
 }
 
 .uploaderPopupContainer .popup .tab .item.selected {
+  border-radius: 2rem;
   background-color: rgb(22, 216, 163);
+  font-weight: 600;
   color: white;
 }
 
@@ -90,6 +88,7 @@
 }
 
 .uploaderPopupContainer .popup .content label {
+  margin: 0.6rem 0;
 }
 
 .uploaderPopupContainer .popup .content label .uploadButton {
@@ -97,5 +96,21 @@
   padding: 0.6rem 0.9rem;
   border-radius: 2rem;
   cursor: pointer;
+  font-weight: 600;
   color: white;
+}
+
+.uploaderPopupContainer .popup .content .useUrl {
+  display: flex;
+}
+
+.uploaderPopupContainer .popup .content .useUrl .divider {
+  height: 1px;
+  width: 100%;
+  background-color: black;
+}
+
+.uploaderPopupContainer .popup .content .useUrl .or {
+  font-size: 1.1rem;
+  font-weight: 600;
 }

@@ -59,6 +59,11 @@ popup.innerHTML = html`<>
       <label for="file">
         <a class="uploadButton">내 컴퓨터에서 선택</a> 
       </label>
+      <div class="useUrl">
+        <div class="divider" />
+        <div class="or">또는</div>
+        <div class="divider" />
+      </div>
     </div>
   </div>
 </>`.toString();
@@ -66,5 +71,16 @@ popup.innerHTML = html`<>
 popup
   .querySelector('.popup .title .close')
   ?.addEventListener('click', () => togglePopup('close'));
+
+Array.from(popup.querySelectorAll('.popup .tab .item')).forEach((el) =>
+  el.addEventListener('click', () => {
+    if (!el.classList.contains('selected')) {
+      popup
+        .querySelector('.popup .tab .item.selected')
+        ?.classList.remove('selected');
+      el.classList.add('selected');
+    }
+  })
+);
 
 document.documentElement.insertBefore(popup, document.head);
