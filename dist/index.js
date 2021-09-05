@@ -156,19 +156,22 @@
 
   // src/popup.ts
   var import_vhtml = __toModule(require_vhtml());
-  var _a;
-  if (document.querySelector(".uploaderPopupContainer") !== null)
-    (_a = document.querySelector(".uploaderPopupContainer")) == null ? void 0 : _a.remove();
   var html = htm_module_default.bind(import_vhtml.default);
-  var popup = document.createElement("div");
-  var isOpen = false;
+  var popup = (() => {
+    if (document.querySelector(".uploaderPopupContainer") !== null)
+      return document.querySelector(".uploaderPopupContainer");
+    const tmp = document.createElement("div");
+    document.documentElement.insertBefore(tmp, document.head);
+    return tmp;
+  })();
+  window.isOpen = false;
   var togglePopup = (type) => {
-    const open = (() => type === void 0 ? !isOpen : type === "open")();
+    const open = (() => type === void 0 ? !window.isOpen : type === "open")();
     if (open)
       document.querySelector(".uploaderPopupContainer").style.display = "flex";
     else
       document.querySelector(".uploaderPopupContainer").style.display = "none";
-    isOpen = open;
+    window.isOpen = open;
   };
   popup.className = "uploaderPopupContainer";
   popup.innerHTML = html`<>
@@ -206,11 +209,29 @@
     </div>
   </div>
 </>`.toString();
-  var _a2;
-  (_a2 = popup.querySelector(".popup .title .close")) == null ? void 0 : _a2.addEventListener("click", () => togglePopup("close"));
-  document.documentElement.insertBefore(popup, document.head);
+  var _a;
+  (_a = popup.querySelector(".popup .title .close")) == null ? void 0 : _a.addEventListener("click", () => togglePopup("close"));
+  document.getElementById("file").onchange = (e) => {
+    console.log(e);
+  };
 
   // src/index.ts
+  var whenReady = () => new Promise((res, rej) => {
+    let timeout;
+    const interval = setInterval(() => {
+      const templateButton = document.querySelector(".css-16523bz.e1h77j9v5");
+      if (templateButton !== null) {
+        clearTimeout(timeout);
+        clearInterval(interval);
+        res();
+      }
+    }, 100);
+    timeout = setTimeout(() => {
+      clearTimeout(timeout);
+      clearInterval(interval);
+      rej();
+    }, 5e3);
+  });
   var main = () => {
     const buttonContainer = document.querySelector(".css-5aeyry.e1h77j9v3");
     const buttonList = buttonContainer.querySelectorAll(".css-16523bz.e1h77j9v5");
@@ -222,10 +243,12 @@
     info.textContent = `entry-uploader v${manifest_default.version}`;
     button.classList.add("upload");
     buttonContainer.insertBefore(button, templateButton.nextSibling);
-    button.onclick = () => togglePopup();
-    window.removeEventListener("load", main);
+    button.onclick = () => {
+      console.log("wa");
+      togglePopup();
+    };
   };
-  window.addEventListener("load", () => main());
+  whenReady().then(main);
   var lastUrl = location.href;
   new MutationObserver(() => {
     const url = location.href;

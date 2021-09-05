@@ -1,17 +1,23 @@
 import htm from 'htm';
 import vhtml from 'vhtml';
 
-if (document.querySelector('.uploaderPopupContainer') !== null)
-  document.querySelector('.uploaderPopupContainer')?.remove();
-
 const html = htm.bind(vhtml);
 
-const popup = document.createElement('div');
+const popup = (() => {
+  if (document.querySelector('.uploaderPopupContainer') !== null)
+    return document.querySelector('.uploaderPopupContainer')!;
 
-let isOpen = false;
+  const tmp = document.createElement('div');
+  document.documentElement.insertBefore(tmp, document.head);
+
+  return tmp;
+})();
+
+window.isOpen = false;
 
 export const togglePopup = (type?: 'open' | 'close') => {
-  const open = (() => (type === undefined ? !isOpen : type === 'open'))();
+  const open = (() =>
+    type === undefined ? !window.isOpen : type === 'open')();
 
   if (open)
     (
@@ -22,7 +28,7 @@ export const togglePopup = (type?: 'open' | 'close') => {
       document.querySelector('.uploaderPopupContainer')! as HTMLDivElement
     ).style.display = 'none';
 
-  isOpen = open;
+  window.isOpen = open;
 };
 
 popup.className = 'uploaderPopupContainer';
@@ -67,4 +73,6 @@ popup
   .querySelector('.popup .title .close')
   ?.addEventListener('click', () => togglePopup('close'));
 
-document.documentElement.insertBefore(popup, document.head);
+document.getElementById('file')!.onchange = (e) => {
+  console.log(e);
+};
