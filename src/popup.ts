@@ -57,14 +57,40 @@ popup.innerHTML = html`<>
       </div>
     </div>
     <div class="tab">
-      <div class="item selected">이미지</div>
-      <div class="item">파일</div>
+      <div class="bg">
+        <div class="item selected" data-type="image">이미지</div>
+        <div class="item" data-type="file">파일</div>
+      </div>
     </div>
-    <div class="content">
+    <div class="content image show">
+      <input type="file" id="image" accept=".jpg, .png, .jpeg, .gif, .bmp, .apng, .svg, .ico, .webp" style="display: none;" />
+      <label for="image">
+        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
+      </label>
+      <div class="divider">
+        <div class="line" />
+        <div class="or">또는</div>
+        <div class="line" />
+      </div>
+      <form id="urlForm">
+        <input type="url" id="url" placeholder="이미지 URL" />
+        <button type="submit">선택</button>
+      </form>
+    </div>
+    <div class="content file">
       <input type="file" id="file" style="display: none;" />
       <label for="file">
-        <a class="uploadButton">내 컴퓨터에서 선택</a> 
+        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
       </label>
+      <div class="divider">
+        <div class="line" />
+        <div class="or">또는</div>
+        <div class="line" />
+      </div>
+      <form id="urlForm">
+        <input type="url" id="url" placeholder="구글 드라이브 공유 URL" />
+        <button type="submit">선택</button>
+      </form>
     </div>
   </div>
 </>`.toString();
@@ -73,6 +99,19 @@ popup
   .querySelector('.popup .title .close')
   ?.addEventListener('click', () => togglePopup('close'));
 
-document.getElementById('file')!.onchange = (e) => {
-  console.log(e);
-};
+Array.from(popup.querySelectorAll('.popup .tab .item')).forEach((el) =>
+  el.addEventListener('click', () => {
+    if (!el.classList.contains('selected')) {
+      popup
+        .querySelector('.popup .tab .item.selected')
+        ?.classList.remove('selected');
+      el.classList.add('selected');
+
+      Array.from(popup.querySelectorAll(`.content`)).forEach((el) =>
+        el.classList.toggle('show')
+      );
+    }
+  })
+);
+
+document.documentElement.insertBefore(popup, document.head);

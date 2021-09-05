@@ -53,49 +53,100 @@
 }
 
 .uploaderPopupContainer .popup .tab {
-  padding: 0.5rem 1rem 0 1rem;
-  background-color: whitesmoke;
-  display: flex;
+  padding: 0.5rem 0.7rem;
+  background-color: #f7f7f7;
 }
 
-.uploaderPopupContainer .popup .tab .item {
-  padding: 0.5rem 1rem 0.4rem 1rem;
-  margin-left: 0.5rem;
+.uploaderPopupContainer .popup .tab .bg {
+  display: flex;
+  background-color: #eeeeee;
+  width: max-content;
+  border-radius: 2rem;
+}
+
+.uploaderPopupContainer .popup .tab .bg .item {
+  padding: 0.5rem 1rem;
   background-color: transparent;
-  color: black;
+  color: #747474;
   border-radius: 0.4rem 0.4rem 0 0;
   cursor: pointer;
+  border-radius: 2rem;
+  line-height: 1;
+  transition: background-color 0.5s, color 0.5s;
 }
 
-.uploaderPopupContainer .popup .tab .item:first-child {
-  margin: 0;
-}
-
-.uploaderPopupContainer .popup .tab .item.selected {
+.uploaderPopupContainer .popup .tab .bg .item.selected {
   background-color: rgb(22, 216, 163);
+  font-weight: 600;
   color: white;
 }
 
 .uploaderPopupContainer .popup .content {
-  padding: 1rem;
   border-radius: 0 0 0.7rem 0.7rem;
-}
-
-.uploaderPopupContainer .popup .content {
-  display: flex;
+  display: none;
+  flex-direction: column;
+  padding: 2rem;
   margin: 0.4rem 0;
-  height: 5rem;
   align-items: center;
   justify-content: center;
 }
 
+.uploaderPopupContainer .popup .content.show {
+  display: flex;
+}
+
 .uploaderPopupContainer .popup .content label {
+  margin: 0.6rem 0;
 }
 
 .uploaderPopupContainer .popup .content label .uploadButton {
   background-color: rgb(22, 216, 163);
-  padding: 0.6rem 0.9rem;
+  padding: 0.6rem 1.2rem;
   border-radius: 2rem;
   cursor: pointer;
+  font-weight: 600;
   color: white;
+}
+
+.uploaderPopupContainer .popup .content .divider {
+  display: flex;
+  width: 40%;
+  align-items: center;
+  margin: 0.5rem 0;
+}
+
+.uploaderPopupContainer .popup .content .divider .line {
+  height: 1px;
+  width: 100%;
+  background-color: #d7d7d7;
+  margin: 0 0.5rem;
+}
+
+.uploaderPopupContainer .popup .content .divider .or {
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  color: #acacac;
+}
+
+.uploaderPopupContainer .popup .content #urlForm {
+  display: flex;
+}
+
+.uploaderPopupContainer .popup .content #urlForm #url {
+  border: 1px solid #e2e2e2;
+  border-right: 0;
+  border-radius: 2rem 0 0 2rem;
+  padding: 0.6rem 0.9rem;
+  outline: none !important;
+}
+
+.uploaderPopupContainer .popup .content #urlForm button {
+  border: 1px solid rgb(22, 216, 163);
+  border-radius: 0 2rem 2rem 0;
+  background-color: rgb(22, 216, 163);
+  color: white;
+  font-weight: 600;
+  padding: 0.6rem 0.9rem 0.6rem 0.65rem;
+  outline: none !important;
 }

@@ -44,10 +44,7 @@ const main = () => {
   button.classList.add('upload');
   buttonContainer.insertBefore(button, templateButton.nextSibling);
 
-  button.onclick = () => {
-    console.log('wa');
-    togglePopup();
-  };
+  button.onclick = () => togglePopup();
 };
 
 // 페이지가 로드될 시 main 함수 실행
