@@ -5,10 +5,7 @@
   "description": "Upload files in entry community.",
   "content_scripts": [
     {
-      "matches": [
-        "https://playentry.org/community/entrystory/*",
-        "https://playentry.org/profile/*/community/entrystory*"
-      ],
+      "matches": ["https://playentry.org/*"],
       "js": ["index.js"],
       "css": ["index.css"],
       "run_at": "document_start"

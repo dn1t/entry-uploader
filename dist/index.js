@@ -94,10 +94,7 @@
   var description = "Upload files in entry community.";
   var content_scripts = [
     {
-      matches: [
-        "https://playentry.org/community/entrystory/*",
-        "https://playentry.org/profile/*/community/entrystory*"
-      ],
+      matches: ["https://playentry.org/*"],
       js: ["index.js"],
       css: ["index.css"],
       run_at: "document_start"
@@ -156,6 +153,28 @@
 
   // src/popup.ts
   var import_vhtml = __toModule(require_vhtml());
+
+  // src/upload.ts
+  var toBase64 = async (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });
+  var upload = async (file) => {
+    const imageData = await toBase64(file);
+    const formData = new FormData();
+    const blob = await (await fetch(imageData)).blob();
+    formData.append("file", blob);
+    formData.append("type", "notcompress");
+    const data = await (await fetch("https://playentry.org/rest/picture", {
+      method: "POST",
+      body: formData
+    })).json();
+    return data;
+  };
+
+  // src/popup.ts
   var html = htm_module_default.bind(import_vhtml.default);
   var popup = (() => {
     if (document.querySelector(".uploaderPopupContainer") !== null)
@@ -200,8 +219,12 @@
     <div class="tab">
       <div class="bg">
         <div class="item selected" data-type="image">이미지</div>
+        <div class="item" data-type="music">음악</div>
+        <div class="item" data-type="video">동영상</div>
         <div class="item" data-type="file">파일</div>
+        <div class="item" data-type="info">정보</div>
       </div>
+      <div class="by"><a href="https://playentry.org/profile/60bc5559659bf40bd15d022c" target="_blank">띠까</a></div>
     </div>
     <div class="content image show">
       <input type="file" id="image" accept=".jpg, .png, .jpeg, .gif, .bmp, .apng, .svg, .ico, .webp" style="display: none;" />
@@ -218,6 +241,18 @@
         <button type="submit">선택</button>
       </form>
     </div>
+    <div class="content music">
+      <input type="file" id="music" style="display: none;" />
+      <label for="music">
+        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
+      </label>
+    </div>
+    <div class="content video">
+      <input type="file" id="video" style="display: none;" />
+      <label for="video">
+        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
+      </label>
+    </div>
     <div class="content file">
       <input type="file" id="file" style="display: none;" />
       <label for="file">
@@ -233,16 +268,32 @@
         <button type="submit">선택</button>
       </form>
     </div>
+    <div class="content info">
+      <h2 class="name">entry-uploader</h2>
+      <p class="info">v${manifest_default.version}</p>
+      <p class="info"><a href="https://github.com/EntryHack/entry-uploader" target="_blank">entry-uploader 깃허브 레포</a>에서 버그 제보와 기여를 해주세요! 뭐가 어떻게 되어가고 있는지 알아야 개발을 하지... 제발... ㅠㅠ</p>
+    </div>
   </div>
 </>`.toString();
   var _a;
   (_a = popup.querySelector(".popup .title .close")) == null ? void 0 : _a.addEventListener("click", () => togglePopup("close"));
+  Array.from(popup.querySelectorAll("input[type=file]")).forEach((el) => {
+    el.onchange = async (e) => {
+      const file = el.files[0];
+      console.log(await upload(file));
+    };
+  });
   Array.from(popup.querySelectorAll(".popup .tab .item")).forEach((el) => el.addEventListener("click", () => {
     var _a2;
     if (!el.classList.contains("selected")) {
       (_a2 = popup.querySelector(".popup .tab .item.selected")) == null ? void 0 : _a2.classList.remove("selected");
       el.classList.add("selected");
-      Array.from(popup.querySelectorAll(`.content`)).forEach((el2) => el2.classList.toggle("show"));
+      Array.from(popup.querySelectorAll(`.content`)).forEach((el2) => {
+        var _a3, _b;
+        if (el2.classList.contains((_b = (_a3 = popup.querySelector(".popup .tab .item.selected")) == null ? void 0 : _a3.getAttribute("data-type")) != null ? _b : ""))
+          return el2.classList.add("show");
+        el2.classList.remove("show");
+      });
     }
   }));
   document.documentElement.insertBefore(popup, document.head);
@@ -265,6 +316,8 @@
     }, 5e3);
   });
   var main = () => {
+    if (!(location.href.includes("https://playentry.org/community/entrystory/") || location.href.includes("https://playentry.org/profile/") && location.href.includes("/community/entrystory")))
+      return;
     const buttonContainer = document.querySelector(".css-5aeyry.e1h77j9v3");
     const buttonList = buttonContainer.querySelectorAll(".css-16523bz.e1h77j9v5");
     const templateButton = buttonList[0];

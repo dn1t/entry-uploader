@@ -28,6 +28,15 @@ const whenReady = () =>
 
 // 엔트리 이야기 글쓰기 섹션에 파일 업로드 버튼 추가 및 클릭 시 기능 구현
 const main = () => {
+  if (
+    !(
+      location.href.includes('https://playentry.org/community/entrystory/') ||
+      (location.href.includes('https://playentry.org/profile/') &&
+        location.href.includes('/community/entrystory'))
+    )
+  )
+    return;
+
   const buttonContainer = document.querySelector('.css-5aeyry.e1h77j9v3')!;
   const buttonList = buttonContainer.querySelectorAll(
     '.css-16523bz.e1h77j9v5'
