@@ -61,17 +61,16 @@ popup.innerHTML = html`<>
     <div class="tab">
       <div class="bg">
         <div class="item selected" data-type="image">이미지</div>
-        <div class="item" data-type="music">음악</div>
-        <div class="item" data-type="video">동영상</div>
         <div class="item" data-type="file">파일</div>
+        <div class="item" data-type="spotify">Spotify</div>
         <div class="item" data-type="info">정보</div>
       </div>
-      <div class="by"><a href="https://playentry.org/profile/60bc5559659bf40bd15d022c" target="_blank">띠까</a></div>
+      <div class="by"><a href="https://playentry.org/profile/60bc5559659bf40bd15d022c" target="_blank">제작자 팔로우하기</a></div>
     </div>
     <div class="content image show">
       <input type="file" id="image" accept=".jpg, .png, .jpeg, .gif, .bmp, .apng, .svg, .ico, .webp" style="display: none;" />
       <label for="image">
-        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
+        <a class="uploadButton">내 컴퓨터에서 선택</a> 
       </label>
       <div class="divider">
         <div class="line" />
@@ -79,35 +78,20 @@ popup.innerHTML = html`<>
         <div class="line" />
       </div>
       <form id="urlForm">
-        <input type="url" id="url" placeholder="이미지 URL" />
-        <button type="submit">선택</button>
+        <input type="url" id="url" placeholder="이미지 원본 URL" />
+        <button type="submit">확인</button>
       </form>
-    </div>
-    <div class="content music">
-      <input type="file" id="music" style="display: none;" />
-      <label for="music">
-        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
-      </label>
-    </div>
-    <div class="content video">
-      <input type="file" id="video" style="display: none;" />
-      <label for="video">
-        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
-      </label>
     </div>
     <div class="content file">
       <input type="file" id="file" style="display: none;" />
       <label for="file">
-        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
+        <a class="uploadButton">내 컴퓨터에서 선택</a> 
       </label>
-      <div class="divider">
-        <div class="line" />
-        <div class="or">또는</div>
-        <div class="line" />
-      </div>
+    </div>
+    <div class="content spotify">
       <form id="urlForm">
-        <input type="url" id="url" placeholder="구글 드라이브 공유 URL" />
-        <button type="submit">선택</button>
+        <input type="url" id="url" placeholder="Spotify 음원 URL" />
+        <button type="submit">확인</button>
       </form>
     </div>
     <div class="content info">
@@ -127,9 +111,96 @@ popup
 ).forEach((el) => {
   el.onchange = async (e) => {
     const file = el.files![0];
+    popup.querySelector(
+      '.content.show label[for] a.uploadButton'
+    )!.textContent = '업로드 중입니다...';
     const fileInfo = await upload(file);
 
-    
+    const info = document.querySelector('.css-1lpaq59.e1h77j9v0 .link')!;
+
+    info.textContent = `첨부된 파일: ${file.name}`;
+
+    togglePopup('close');
+
+    popup.querySelector(
+      '.content.show label[for] a.uploadButton'
+    )!.textContent = '내 컴퓨터에서 선택';
+
+    (
+      document.querySelector('.css-vvqlz4.e13821ld2')! as HTMLAnchorElement
+    ).onclick = async (e) => {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      const content = (document.getElementById('Write')! as HTMLTextAreaElement)
+        .value;
+
+      const postRes = await fetch('https://playentry.org/graphql', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: `mutation CREATE_ENTRYSTORY(
+            $content: String
+            $text: String
+            $image: String
+            $sticker: String
+            $cursor: String
+          ) {
+            createEntryStory(
+              content: $content
+              text: $text
+              image: $image
+              sticker: $sticker
+              cursor: $cursor
+            ) {
+              discuss {
+                id
+              }
+            }
+          }
+          `,
+          variables: { content },
+        }),
+      });
+      if (!postRes.ok) return alert(`에러: ${postRes.status}`);
+
+      const postData = await postRes.json();
+      if (
+        !(
+          postData.errors === undefined ||
+          postData.errors[0] === undefined ||
+          postData.errors[0].statusCode === undefined
+        )
+      )
+        return alert(`에러: ${postData.errors[0].statusCode}`);
+
+      const res = await fetch(
+        'https://entry-uploader.thoratica.repl.co/addData',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: postData.data.createEntryStory.discuss.id,
+            files: [
+              {
+                type:
+                  popup.querySelector('.content.show')?.classList[1] ?? 'file',
+                url: `https://playentry.org/uploads/${fileInfo.filename.slice(
+                  0,
+                  2
+                )}/${fileInfo.filename.slice(2, 4)}/${fileInfo.filename}.${
+                  fileInfo.filename.imageType
+                }`,
+              },
+            ],
+          }),
+        }
+      );
+
+      console.log(await res.json());
+
+      location.reload();
+    };
   };
 });
 

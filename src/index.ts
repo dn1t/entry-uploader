@@ -12,7 +12,7 @@ const whenReady = () =>
   new Promise<void>((res, rej) => {
     let timeout: any;
     const interval = setInterval(() => {
-      const templateButton = document.querySelector('.css-16523bz.e1h77j9v5')!;
+      const templateButton = document.querySelector('.css-109f9np.e1h77j9v7')!;
       if (templateButton !== null) {
         clearTimeout(timeout);
         clearInterval(interval);
@@ -37,12 +37,12 @@ const main = () => {
   )
     return;
 
-  const buttonContainer = document.querySelector('.css-5aeyry.e1h77j9v3')!;
+  const buttonContainer = document.querySelector('.css-ljggwk.e1h77j9v9')!;
   const buttonList = buttonContainer.querySelectorAll(
-    '.css-16523bz.e1h77j9v5'
+    '.css-109f9np.e1h77j9v7'
   )!;
   const templateButton = buttonList[0];
-  const info = document.querySelector('.css-1lpaq59.e1h77j9v12 .link')!;
+  const info = document.querySelector('.css-1lpaq59.e1h77j9v0 .link')!;
 
   if (buttonList.length === 2) buttonList[1].remove();
 

@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "entry-uploader",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Upload files in entry community.",
   "content_scripts": [
     {
@@ -14,7 +14,7 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "permissions": ["https://playentry.org/*"],
+  "permissions": ["https://playentry.org/*", "https://entry-uploader.thoratica.repl.co/*"],
   "icons": {
     "64": "icons/icon-64.png",
     "128": "icons/icon-128.png",

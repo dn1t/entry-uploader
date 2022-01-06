@@ -90,7 +90,7 @@
   // src/manifest.json
   var manifest_version = 2;
   var name = "entry-uploader";
-  var version = "0.1.0";
+  var version = "0.1.2";
   var description = "Upload files in entry community.";
   var content_scripts = [
     {
@@ -103,7 +103,7 @@
   var background = {
     scripts: ["background.js"]
   };
-  var permissions = ["https://playentry.org/*"];
+  var permissions = ["https://playentry.org/*", "https://entry-uploader.thoratica.repl.co/*"];
   var icons = {
     "64": "icons/icon-64.png",
     "128": "icons/icon-128.png",
@@ -219,17 +219,16 @@
     <div class="tab">
       <div class="bg">
         <div class="item selected" data-type="image">이미지</div>
-        <div class="item" data-type="music">음악</div>
-        <div class="item" data-type="video">동영상</div>
         <div class="item" data-type="file">파일</div>
+        <div class="item" data-type="spotify">Spotify</div>
         <div class="item" data-type="info">정보</div>
       </div>
-      <div class="by"><a href="https://playentry.org/profile/60bc5559659bf40bd15d022c" target="_blank">띠까</a></div>
+      <div class="by"><a href="https://playentry.org/profile/60bc5559659bf40bd15d022c" target="_blank">제작자 팔로우하기</a></div>
     </div>
     <div class="content image show">
       <input type="file" id="image" accept=".jpg, .png, .jpeg, .gif, .bmp, .apng, .svg, .ico, .webp" style="display: none;" />
       <label for="image">
-        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
+        <a class="uploadButton">내 컴퓨터에서 선택</a> 
       </label>
       <div class="divider">
         <div class="line" />
@@ -237,35 +236,20 @@
         <div class="line" />
       </div>
       <form id="urlForm">
-        <input type="url" id="url" placeholder="이미지 URL" />
-        <button type="submit">선택</button>
+        <input type="url" id="url" placeholder="이미지 원본 URL" />
+        <button type="submit">확인</button>
       </form>
-    </div>
-    <div class="content music">
-      <input type="file" id="music" style="display: none;" />
-      <label for="music">
-        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
-      </label>
-    </div>
-    <div class="content video">
-      <input type="file" id="video" style="display: none;" />
-      <label for="video">
-        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
-      </label>
     </div>
     <div class="content file">
       <input type="file" id="file" style="display: none;" />
       <label for="file">
-        <a class="uploadButton">내 컴퓨터에서 선택 (8MB 미만)</a> 
+        <a class="uploadButton">내 컴퓨터에서 선택</a> 
       </label>
-      <div class="divider">
-        <div class="line" />
-        <div class="or">또는</div>
-        <div class="line" />
-      </div>
+    </div>
+    <div class="content spotify">
       <form id="urlForm">
-        <input type="url" id="url" placeholder="구글 드라이브 공유 URL" />
-        <button type="submit">선택</button>
+        <input type="url" id="url" placeholder="Spotify 음원 URL" />
+        <button type="submit">확인</button>
       </form>
     </div>
     <div class="content info">
@@ -280,7 +264,65 @@
   Array.from(popup.querySelectorAll("input[type=file]")).forEach((el) => {
     el.onchange = async (e) => {
       const file = el.files[0];
-      console.log(await upload(file));
+      popup.querySelector(".content.show label[for] a.uploadButton").textContent = "\uC5C5\uB85C\uB4DC \uC911\uC785\uB2C8\uB2E4...";
+      const fileInfo = await upload(file);
+      const info = document.querySelector(".css-1lpaq59.e1h77j9v0 .link");
+      info.textContent = `\uCCA8\uBD80\uB41C \uD30C\uC77C: ${file.name}`;
+      togglePopup("close");
+      popup.querySelector(".content.show label[for] a.uploadButton").textContent = "\uB0B4 \uCEF4\uD4E8\uD130\uC5D0\uC11C \uC120\uD0DD";
+      document.querySelector(".css-vvqlz4.e13821ld2").onclick = async (e2) => {
+        var _a2, _b;
+        e2.preventDefault();
+        e2.stopImmediatePropagation();
+        const content = document.getElementById("Write").value;
+        const postRes = await fetch("https://playentry.org/graphql", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: `mutation CREATE_ENTRYSTORY(
+            $content: String
+            $text: String
+            $image: String
+            $sticker: String
+            $cursor: String
+          ) {
+            createEntryStory(
+              content: $content
+              text: $text
+              image: $image
+              sticker: $sticker
+              cursor: $cursor
+            ) {
+              discuss {
+                id
+              }
+            }
+          }
+          `,
+            variables: { content }
+          })
+        });
+        if (!postRes.ok)
+          return alert(`\uC5D0\uB7EC: ${postRes.status}`);
+        const postData = await postRes.json();
+        if (!(postData.errors === void 0 || postData.errors[0] === void 0 || postData.errors[0].statusCode === void 0))
+          return alert(`\uC5D0\uB7EC: ${postData.errors[0].statusCode}`);
+        const res = await fetch("https://entry-uploader.thoratica.repl.co/addData", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id: postData.data.createEntryStory.discuss.id,
+            files: [
+              {
+                type: (_b = (_a2 = popup.querySelector(".content.show")) == null ? void 0 : _a2.classList[1]) != null ? _b : "file",
+                url: `https://playentry.org/uploads/${fileInfo.filename.slice(0, 2)}/${fileInfo.filename.slice(2, 4)}/${fileInfo.filename}.${fileInfo.filename.imageType}`
+              }
+            ]
+          })
+        });
+        console.log(await res.json());
+        location.reload();
+      };
     };
   });
   Array.from(popup.querySelectorAll(".popup .tab .item")).forEach((el) => el.addEventListener("click", () => {
@@ -302,7 +344,7 @@
   var whenReady = () => new Promise((res, rej) => {
     let timeout;
     const interval = setInterval(() => {
-      const templateButton = document.querySelector(".css-16523bz.e1h77j9v5");
+      const templateButton = document.querySelector(".css-109f9np.e1h77j9v7");
       if (templateButton !== null) {
         clearTimeout(timeout);
         clearInterval(interval);
@@ -318,10 +360,10 @@
   var main = () => {
     if (!(location.href.includes("https://playentry.org/community/entrystory/") || location.href.includes("https://playentry.org/profile/") && location.href.includes("/community/entrystory")))
       return;
-    const buttonContainer = document.querySelector(".css-5aeyry.e1h77j9v3");
-    const buttonList = buttonContainer.querySelectorAll(".css-16523bz.e1h77j9v5");
+    const buttonContainer = document.querySelector(".css-ljggwk.e1h77j9v9");
+    const buttonList = buttonContainer.querySelectorAll(".css-109f9np.e1h77j9v7");
     const templateButton = buttonList[0];
-    const info = document.querySelector(".css-1lpaq59.e1h77j9v12 .link");
+    const info = document.querySelector(".css-1lpaq59.e1h77j9v0 .link");
     if (buttonList.length === 2)
       buttonList[1].remove();
     const button = templateButton.cloneNode(true);
